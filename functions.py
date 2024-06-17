@@ -10,3 +10,16 @@ def put_todos(todolist, filepath):
     writable = [i+'\n' for i in todolist]
     with open(filepath, 'w') as todofile:
         todofile.writelines(writable)
+
+import csv
+def todo_show(filepath):
+    with open(filepath, 'r') as file:
+        todos = csv.DictReader(file)
+        counter = 1
+        for item in todos:
+            if int(item['edited']):
+                operation = 'Last edited'
+            else:
+                operation = 'Added'
+            print(counter, '.)', item['todo'], '---', operation ,' on', item['last_access_date'])
+            counter += 1

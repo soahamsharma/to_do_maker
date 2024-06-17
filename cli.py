@@ -7,11 +7,13 @@ def main():
 
     working_file = 'todo.txt'
     while True:
-        all_todos = glob.glob('*.txt')
+        all_todos = glob.glob('*.txt') + glob.glob('*.csv')
         print('Currently created todo lists - ')
+        print("   ", end='')
         for f in all_todos:
-            print("    " + f)
-        print('Active todo file - ' + working_file)
+            print(" |",f, end='')
+        print(" | ")
+        print('     Active todo file - ' + working_file)
         next = input("What would you like to do? ").split()
         if next == []:
             continue
