@@ -1,19 +1,18 @@
-from functions import get_todos, put_todos
+from functions import get_todos, put_todos, all_todo_files
 from time import strftime
 import glob
 
-def main():
-
-
-    working_file = 'todo.txt'
-    while True:
-        all_todos = glob.glob('*.txt') + glob.glob('*.csv')
+def pretty_print_all_todos(working_file, extensions):
         print('Currently created todo lists - ')
-        print("   ", end='')
-        for f in all_todos:
-            print(" |",f, end='')
-        print(" | ")
+        print('    ', *all_todo_files(*extensions), sep=' | ', end=' | \n')
         print('     Active todo file - ' + working_file)
+        print("to change active todo file, type 'switch <filename>'")
+
+def main():
+    working_file = 'default.txt'
+    extensions = ['py', 'csv', 'txt']
+    pretty_print_all_todos(working_file, extensions)
+    while True:
         next = input("What would you like to do? ").split()
         if next == []:
             continue
@@ -73,8 +72,8 @@ def main():
                 print("Program Quitting.")
                 break
             case 'switch':
-                if len(next) != 2 or not next[-1].endswith('.txt'):
-                    print("Uage: 'switch <filename.txt>'")
+                if len(next) != 2 or not next[1].split('.')[-1] in extensions:
+                    print("Uage: 'switch <filename>'")
                     continue
                 newfile = next[1]
                 try:
