@@ -1,5 +1,6 @@
 import csv, glob
 
+
 def plain_text_todo_parser(text_todo: str) -> dict:
     """Gets a todo as written in plaintext (default format only) in a text file and returns a todo object (currently implemented as dict)"""
     todo_elements =[i.strip() for i in text_todo.split('-')]
@@ -27,30 +28,35 @@ def get_todos(filepath: str) -> list:
         with open(filepath, 'r') as todofile:
             if filepath.endswith('.txt'):
                 tdl = [i.strip() for i in todofile.readlines()]
+                tdl = [plain_text_todo_parser(i) for i in tdl]
             elif filepath.endswith('.csv'):
                 tdl = list(csv.DictReader(todofile))
             return tdl
     except FileNotFoundError:
+        print("File does not currently exist, creating new file")
         with open(filepath, 'w') as todofile:
             return []
+
+def show_todos(filepath):
+    toDo = get_todos(filepath)
+    if len(toDo) == 0:
+        print('to-do list currently empty.')
+    for i, item in enumerate(toDo):
+        print(f"{str(i+1)}) {plain_text_todo_writer(item)}")
     
 
 def put_todos(todolist: list, filepath: str) -> None:
     """Takes an array and writes each element to file after adding newline character so that each array element is written on a separate line. Currently supports separate writing todos into - .txt"""
     if filepath.endswith('.txt'):
-        writable = [i+'\n' for i in todolist]
+        writable = [plain_text_todo_writer(i) for i in todolist]
         with open(filepath, 'w') as todofile:
             todofile.writelines(writable)
     elif filepath.endswith('.csv'):
-        pass
-
-
-def todo_show_csv(filepath: str) -> None:
-    with open(filepath, 'r') as file:
-        todos = csv.DictReader(file)
-        counter = 1
-        for item in todos:
-            print(plain_text_todo_writer(item))
+        with open(filepath, 'w') as todofile:
+            writer = csv.DictWriter(todofile, fieldnames=todolist[0].keys())
+            writer.writeheader()
+            for i in todolist:
+                writer.writerow(i)
 
 
 def all_todo_files(valid_extensions: list) -> list:
@@ -69,6 +75,5 @@ def pretty_print_all_todo_files(working_file: str, extensions: list) -> None:
 
 #print(plain_text_todo_writer({'todo': 'Second item', 'access_date': '19 Jun 2024 at 15:12', 'edited': 0, 'due': 'tomorrow'}))
 #print(plain_text_todo_writer({'todo': 'Item number 3', 'access_date': '19 Jun 2024 at 15:13', 'edited': 0, 'due': 'day after tomorrow'}))
-todo_show_csv('new.csv')
-print(plain_text_todo_parser("'Bolo bhartrihari baba ki jai' - Last edited on 'Aaj ki hi subah'"))
-print(plain_text_todo_parser("'Bolo Hanuman ji maharaj ki jai' - Last edited on 'Aaj shaam'")['todo'])
+#print(plain_text_todo_parser("'Bolo bhartrihari baba ki jai' - Last edited on 'Aaj ki hi subah'"))
+#print(plain_text_todo_parser("'Bolo Hanuman ji maharaj ki jai' - Last edited on 'Aaj shaam'")['todo'])

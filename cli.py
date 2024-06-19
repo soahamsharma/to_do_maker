@@ -1,6 +1,7 @@
-from functions import get_todos, put_todos, all_todo_files, pretty_print_all_todo_files
+from functions import get_todos, put_todos, all_todo_files, pretty_print_all_todo_files, plain_text_todo_writer, show_todos
 from time import strftime
 import glob
+
 
 
 def main():
@@ -18,11 +19,7 @@ def main():
         now = strftime("%d %b %Y at %H:%M")
         match command:
             case'show':
-                toDo = get_todos(working_file)
-                if len(toDo) == 0:
-                    print('to-do list currently empty.')
-                for i, item in enumerate(toDo):
-                    print(f"{str(i+1)}) {item}")
+                show_todos(working_file)      
             case 'delete':
                 if len(next) != 2:
                     print('Usage: delete <to-do number>')
@@ -39,20 +36,17 @@ def main():
                     try:
                         delIndex = int(next[1])
                         delItem = toDo.pop(delIndex - 1)
-                        print('Deleted', '"'+delItem+'"', 'from the to-do-list')
-                    except:
+                        print('Deleted', '"'+delItem['todo']+'"', 'from the to-do-list')
+                    except (IndexError, ValueError) as e:
                         print(f"Please mention a valid item number to delete. There are currently {len(toDo)} items in the to-do list")
                 put_todos(toDo, working_file)
             case 'add':
                 toDo = get_todos(working_file)
-                msg = ' '.join(next[1:]).capitalize()
-                print('Adding', '"'+msg+'"', 'to the to-do list')
+                body_text = ' '.join(next[1:]).capitalize()
+                print('Adding', '"'+body_text+'"', 'to the to-do list')
                 optional_due_date = input("Provide optional due date. Press enter to save without due date. : ") 
-                if optional_due_date:
-                    msg += " - Added on "+now + ' - Due on: ' + optional_due_date
-                else:
-                    msg += " - Added on "+now
-                toDo.append(msg)
+                due = optional_due_date if optional_due_date else None
+                toDo.append({'todo':body_text, 'access_date': now, 'edited': 0, 'due':due})
                 put_todos(toDo, working_file)
             case 'edit':
                 toDo = get_todos(working_file)
@@ -78,18 +72,7 @@ def main():
                     print("Uage: 'switch <filename>'")
                     continue
                 newfile = next[1]
-                try:
-                    toDo = get_todos(newfile)
-                    print(f"Reading to-do list from {newfile}")
-                    if len(toDo) == 0:
-                        print('to-do list currently empty.')
-                    else:
-                        for i, item in enumerate(toDo):
-                            print(f"{str(i+1)}) {item}")
-                except:
-                    print("File does not currently exist, creating new file")
-                    with open(newfile, 'w') as file:
-                        file.write("")
+                show_todos(newfile)
                 working_file = newfile
             case _:
                 print("I dunno what you said")
