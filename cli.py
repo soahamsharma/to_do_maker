@@ -1,17 +1,14 @@
-from functions import get_todos, put_todos, all_todo_files
+from functions import get_todos, put_todos, all_todo_files, pretty_print_all_todo_files
 from time import strftime
 import glob
 
-def pretty_print_all_todos(working_file, extensions):
-        print('Currently created todo lists - ')
-        print('    ', *all_todo_files(*extensions), sep=' | ', end=' | \n')
-        print('     Active todo file - ' + working_file)
-        print("to change active todo file, type 'switch <filename>'")
 
 def main():
     working_file = 'default.txt'
-    extensions = ['py', 'csv', 'txt']
-    pretty_print_all_todos(working_file, extensions)
+    extensions = ['json', 'csv', 'txt']
+
+    pretty_print_all_todo_files(working_file, extensions)
+    
     while True:
         next = input("What would you like to do? ").split()
         if next == []:
@@ -50,7 +47,12 @@ def main():
                 toDo = get_todos(working_file)
                 msg = ' '.join(next[1:]).capitalize()
                 print('Adding', '"'+msg+'"', 'to the to-do list')
-                toDo.append(msg+" - Added on "+now)
+                optional_due_date = input("Provide optional due date. Press enter to save without due date. : ") 
+                if optional_due_date:
+                    msg += " - Added on "+now + ' - Due on: ' + optional_due_date
+                else:
+                    msg += " - Added on "+now
+                toDo.append(msg)
                 put_todos(toDo, working_file)
             case 'edit':
                 toDo = get_todos(working_file)
