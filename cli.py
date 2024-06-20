@@ -1,13 +1,13 @@
-from functions import get_todos, put_todos, all_todo_files, pretty_print_all_todo_files, plain_text_todo_writer, show_todos
+from functions import get_todos, put_todos, all_todo_files, pretty_print_all_todo_files, plain_text_todo_writer, pretty_print_todos
 from time import strftime
 import glob
 
-
+default_file = 'default.txt'
+extensions = ['json', 'csv', 'txt']
 
 def main():
-    working_file = 'default.txt'
-    extensions = ['json', 'csv', 'txt']
 
+    working_file = default_file
     pretty_print_all_todo_files(working_file, extensions)
     
     while True:
@@ -19,7 +19,8 @@ def main():
         now = strftime("%d %b %Y at %H:%M")
         match command:
             case'show':
-                show_todos(working_file)      
+                toDo = get_todos(working_file)
+                pretty_print_todos(toDo)      
             case 'delete':
                 if len(next) != 2:
                     print('Usage: delete <to-do number>')
@@ -51,18 +52,20 @@ def main():
             case 'edit':
                 toDo = get_todos(working_file)
                 try:
-                    delIndex = int(next[1])
-                    new_item = next[2]
-                    new_item = " ".join(next[2:]).title()
+                    editIndex = int(next[1])
+                    new_text = next[2]
+                    new_text = " ".join(next[2:]).title()
                 except:
                     print("Usage: 'edit <to-do number> <new text>'")
                     continue
-                if delIndex > len(toDo):
+                if editIndex > len(toDo):
                     print("The list has",len(toDo),"item(s).")
                 else:
-                    old_item = toDo[delIndex-1]
-                    print("Changed item at to-do no.", delIndex, "from", '"'+old_item+'"', 'to', '"'+new_item+'"')
-                    toDo[delIndex-1]= new_item + " - Last edited on "+now
+                    old_item = toDo[editIndex-1]['todo']
+                    print("Changed item at to-do no.", editIndex, "from", '"'+old_item+'"', 'to', '"'+new_text+'"')
+                    toDo[editIndex-1]['todo'] = new_text
+                    toDo[editIndex-1]['edited'] = 1
+                    toDo[editIndex-1]['access_date'] = now
                 put_todos(toDo, working_file)
             case 'quit':
                 print("Program Quitting.")
@@ -72,7 +75,8 @@ def main():
                     print("Uage: 'switch <filename>'")
                     continue
                 newfile = next[1]
-                show_todos(newfile)
+                toDo = get_todos(newfile)
+                pretty_print_todos(toDo)     
                 working_file = newfile
             case _:
                 print("I dunno what you said")

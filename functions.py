@@ -30,15 +30,14 @@ def get_todos(filepath: str) -> list:
                 tdl = [i.strip() for i in todofile.readlines()]
                 tdl = [plain_text_todo_parser(i) for i in tdl]
             elif filepath.endswith('.csv'):
-                tdl = list(csv.DictReader(todofile))
+                tdl = list(csv.DictReader(todofile, quoting=csv.QUOTE_NONNUMERIC))
             return tdl
     except FileNotFoundError:
         print("File does not currently exist, creating new file")
         with open(filepath, 'w') as todofile:
             return []
 
-def show_todos(filepath):
-    toDo = get_todos(filepath)
+def pretty_print_todos(toDo):
     if len(toDo) == 0:
         print('to-do list currently empty.')
     for i, item in enumerate(toDo):
@@ -48,12 +47,12 @@ def show_todos(filepath):
 def put_todos(todolist: list, filepath: str) -> None:
     """Takes an array and writes each element to file after adding newline character so that each array element is written on a separate line. Currently supports separate writing todos into - .txt"""
     if filepath.endswith('.txt'):
-        writable = [plain_text_todo_writer(i) for i in todolist]
+        writable = [plain_text_todo_writer(i)+'\n' for i in todolist]
         with open(filepath, 'w') as todofile:
             todofile.writelines(writable)
     elif filepath.endswith('.csv'):
         with open(filepath, 'w') as todofile:
-            writer = csv.DictWriter(todofile, fieldnames=todolist[0].keys())
+            writer = csv.DictWriter(todofile, fieldnames=todolist[0].keys(), quoting=csv.QUOTE_NONNUMERIC, lineterminator="\n")
             writer.writeheader()
             for i in todolist:
                 writer.writerow(i)
@@ -73,7 +72,8 @@ def pretty_print_all_todo_files(working_file: str, extensions: list) -> None:
         print('     Active todo file - ' + working_file)
         print("to change active todo file, type 'switch <filename>'")
 
-#print(plain_text_todo_writer({'todo': 'Second item', 'access_date': '19 Jun 2024 at 15:12', 'edited': 0, 'due': 'tomorrow'}))
+#print(plain_text_todo_writer({'todo': 'Second item', 'access_date': '19 Jun 2024 at 15:12', 'edited': '0', 'due': 'tomorrow'}))
 #print(plain_text_todo_writer({'todo': 'Item number 3', 'access_date': '19 Jun 2024 at 15:13', 'edited': 0, 'due': 'day after tomorrow'}))
 #print(plain_text_todo_parser("'Bolo bhartrihari baba ki jai' - Last edited on 'Aaj ki hi subah'"))
 #print(plain_text_todo_parser("'Bolo Hanuman ji maharaj ki jai' - Last edited on 'Aaj shaam'")['todo'])
+#print(get_todos('new.csv'))
