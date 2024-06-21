@@ -21,7 +21,6 @@ def plain_text_todo_writer(dict_todo: dict) -> str:
     due_message = (" - Due on: " + dict_todo['due']) if ('due' in dict_todo and dict_todo['due']) else ""
     return body_text + access_messsage + due_message
 
-
 def get_todos(filepath: str) -> list:
     """Reads the file specified as argument and returns an array of todos, with each line in file (whitespace stripped) as a separate element"""
     try:
@@ -42,8 +41,7 @@ def pretty_print_todos(toDo):
         print('to-do list currently empty.')
     for i, item in enumerate(toDo):
         print(f"{str(i+1)}) {plain_text_todo_writer(item)}")
-    
-
+  
 def put_todos(todolist: list, filepath: str) -> None:
     """Takes an array and writes each element to file after adding newline character so that each array element is written on a separate line. Currently supports separate writing todos into - .txt"""
     if filepath.endswith('.txt'):
@@ -52,11 +50,12 @@ def put_todos(todolist: list, filepath: str) -> None:
             todofile.writelines(writable)
     elif filepath.endswith('.csv'):
         with open(filepath, 'w') as todofile:
+            if len(todolist) == 0:
+                return
             writer = csv.DictWriter(todofile, fieldnames=todolist[0].keys(), quoting=csv.QUOTE_NONNUMERIC, lineterminator="\n")
             writer.writeheader()
             for i in todolist:
                 writer.writerow(i)
-
 
 def all_todo_files(valid_extensions: list) -> list:
     """Takes a list of valid extensions (without the '.' symbol and returns a list of all files with that extension in the operating folder)"""
@@ -69,11 +68,12 @@ def all_todo_files(valid_extensions: list) -> list:
 def pretty_print_all_todo_files(working_file: str, extensions: list) -> None:
         print('Currently created todo lists - ')
         print('    ', *all_todo_files(extensions), sep=' | ', end=' | \n')
-        print('     Active todo file - ' + working_file)
-        print("to change active todo file, type 'switch <filename>'")
+        print('       Active todo file - ' + working_file)
+        print("")
 
-#print(plain_text_todo_writer({'todo': 'Second item', 'access_date': '19 Jun 2024 at 15:12', 'edited': '0', 'due': 'tomorrow'}))
-#print(plain_text_todo_writer({'todo': 'Item number 3', 'access_date': '19 Jun 2024 at 15:13', 'edited': 0, 'due': 'day after tomorrow'}))
-#print(plain_text_todo_parser("'Bolo bhartrihari baba ki jai' - Last edited on 'Aaj ki hi subah'"))
-#print(plain_text_todo_parser("'Bolo Hanuman ji maharaj ki jai' - Last edited on 'Aaj shaam'")['todo'])
-#print(get_todos('new.csv'))
+if __name__ == '__main__':
+    print(plain_text_todo_writer({'todo': 'Second item', 'access_date': '19 Jun 2024 at 15:12', 'edited': '0', 'due': 'tomorrow'}))
+    print(plain_text_todo_writer({'todo': 'Item number 3', 'access_date': '19 Jun 2024 at 15:13', 'edited': 0, 'due': 'day after tomorrow'}))
+    print(plain_text_todo_parser("'Bolo bhartrihari baba ki jai' - Last edited on 'Aaj ki hi subah'"))
+    print(plain_text_todo_parser("'Bolo Hanuman ji maharaj ki jai' - Last edited on 'Aaj shaam'")['todo'])
+    print(get_todos('new.csv'))
