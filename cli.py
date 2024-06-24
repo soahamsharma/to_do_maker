@@ -18,7 +18,7 @@ def main():
             command = next[0].lower()
         now = strftime("%d %b %Y at %H:%M")
         match command:
-            case('help'):
+            case 'help':
                 print("")
                 print('    show - Shows all todos in the Active file')
                 print('    add - Add a new todo item. Usage: "add <todo-text>". User is prompted for an optional due date')
@@ -28,7 +28,7 @@ def main():
                 print('    quit - quits the program.')
                 print('  Note: Todos are saved to file automatically after each operation')
                 print("")
-            case'show':
+            case 'show':
                 toDo = get_todos(working_file)
                 pretty_print_todos(toDo)      
             case 'delete':
